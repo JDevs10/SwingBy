@@ -1,0 +1,142 @@
+import React, { Component } from 'react';
+import {StyleSheet, View, Text, Image, TouchableOpacity, BackHandler, Alert, Dimensions, AsyncStorage} from  'react-native';
+import DeviceInfo from 'react-native-device-info';
+
+export default class MyHeader extends Component {
+    constructor(props){
+        super(props); 
+    
+        /**
+         * Returns true if the screen is in portrait mode
+         */
+        const isPortrait = () => {
+            const dim = Dimensions.get('screen');
+            return dim.height >= dim.width;
+        };
+    
+        /**
+        * Returns true of the screen is in landscape mode
+        */
+        const isLandscape = () => {
+            const dim = Dimensions.get('screen');
+            return dim.width >= dim.height;
+        };
+    
+        this.state = {
+            orientation: isPortrait() ? 'portrait' : 'landscape'
+        };
+        
+        // Event Listener for orientation changes
+        Dimensions.addEventListener('change', () => {
+            this.setState({
+                orientation: isPortrait() ? 'portrait' : 'landscape'
+            }); 
+        });
+    }
+    
+    componentWillMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.existPressed);
+    }
+    
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.existPressed);
+    }
+    
+    existPressed = () => {
+        Alert.alert(
+        'Exit App',
+        'Do you want to exit?',
+        [
+            {text: 'No', onPress: () => this.leaving(false)},
+            {text: 'Yes', onPress: () => this.leaving(true)},
+        ],
+        { cancelable: false });
+        return true;
+    }
+    
+    async leaving(isLeaving){
+        if(isLeaving == true){
+        await AsyncStorage.removeItem('token');
+            BackHandler.exitApp();
+        }else{
+            console.log('Cancel Pressed');
+        }
+    }
+
+    render() {
+        if (this.state.orientation === 'portrait') {
+            console.log('orientation : ', this.state.orientation);
+        }
+        else {
+            console.log('orientation : ', this.state.orientation);
+        }
+    
+        const disconnect = () => {
+            this.existPressed();
+        }
+
+        const goToBasket = () => {
+            alert("Navigate to Basket");
+            // this.props.navigation.natigate("Basket");
+        }
+
+        return (
+            <View style={styles.body}> 
+                <View style={[styles.layout, {justifyContent: "flex-start", alignItems: "flex-start", width: "10%"}]}>
+                    <Text style={styles.text}></Text>
+                </View>
+
+                <View style={[styles.layout, {flex: 1, width: "50%"}]}>
+                    <Text style={styles.text}>{this.props.textTittleValue}</Text>
+                </View>
+
+                <View style={[styles.layout, {justifyContent: "flex-end", alignItems: "flex-end", width: "10%"}]}>
+                    <TouchableOpacity
+                        onPress={() => goToBasket()}>
+                        <Image style={styles.power_image} source={require('../../../img/basket.png')}/>
+                        {this.props.basketPrice != '' ? <Text style={styles.textBasket}>{this.props.basketPrice}</Text> : null}              
+                    </TouchableOpacity>
+                </View>
+            </View>
+        )
+    }
+}
+
+const styles = StyleSheet.create({
+    body: {
+        padding: 10,
+        height: "20%",
+        width: "100%",
+        flexDirection: 'row',
+        backgroundColor: '#FFA500'
+    },
+    layout:{
+        // flex: 1,
+        padding: 10,
+        height: this.state.orientation === "portrait" ? "40%" : "50%",
+        // width: "30%",
+        justifyContent: "center",
+        alignItems: "center",
+        // backgroundColor: 'black'
+    },
+    text: {
+        flex: 1,
+        color: "#fff",
+        fontSize: 20,
+        fontWeight: "bold",
+        marginTop: 20
+    },
+    textBasket: {
+        flex: 1,
+        color: "#000",
+        fontSize: 20,
+        fontWeight: "bold",
+    },
+    power_image: {
+        width: DeviceInfo.isTablet() ? 40 : 20, 
+        height: DeviceInfo.isTablet() ? 40 : 20,
+        // margin: 10,
+        // position: "relative",
+        // left: 0
+    }
+});
