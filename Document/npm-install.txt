@@ -14,6 +14,7 @@ npm install react-native-elements
 npm install react-native-reanimated
 npm install react-native-gesture-handler
 
+npm install react-navigation @react-navigation/native @react-navigation/drawer @react-native-community/toolbar-android react-native-screens react-native-paper react-native-safe-area-context react-native-vector-icons react-native-sqlite-storage react-native-elements react-native-reanimated react-native-gesture-handler
 
 npm audit fix --force
 
